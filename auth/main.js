@@ -14,12 +14,13 @@ const app = express();
 app.use( bodyParser.json() );
 
 // Variables
-const DATABASE_IP   = 'authdb';
+const DATABASE_IP   = process.env.AUTH_IP;
 const SECRET        = 'secretKey';
 const DATABASE      = 'auth';
 const USER_COL      = 'users';
 const PORT          = '8201';
 
+// Register a drivers details in the auth mongo database.
 // Test Command - curl -i -X POST -H "Content-Type: application/json" --data "{ \"username\":\"bart\", \"password\":\"muppet\" }" http://localhost:8201/register
 app.post( '/register', async (req, res) => {
     try {
@@ -52,6 +53,7 @@ app.post( '/register', async (req, res) => {
     }
 });
 
+// Get the drivers token (used to access the roster).
 // Test Command - curl -i -X POST -H "Content-Type: application/json" --data "{ \"password\":\"muppet\" }" http://localhost:8443/token/bart
 app.post( '/token/:username', async (req, res) => {
     try {
@@ -87,6 +89,7 @@ app.post( '/token/:username', async (req, res) => {
     }
 });
 
+// Verify a users token.
 // Test Command -  curl -i -X GET -H "x-auth:{{TOKEN}}" http://localhost:8443/session
 app.get('/session', async (req, res) => {
     try {
@@ -107,5 +110,5 @@ const server = spdy.createServer( {
 }, app );
 
 server.listen( PORT, () => {
-    console.log( `Auth server listening on port ${PORT}...` )
+    console.log( `Auth server listening on port ${PORT}...` );
 });

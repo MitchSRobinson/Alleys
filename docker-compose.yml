@@ -21,6 +21,8 @@ services:
   auth:
     build: ./auth
     container_name: auth
+    environment:
+      - DATABASE_IP=authdb
     ports:
       - 8201:8201
     links:
