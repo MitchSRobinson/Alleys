@@ -1,0 +1,45 @@
+version: '3'
+services:
+
+  authdb:
+    image: mongo:latest
+    container_name: authdb
+
+  rosterdb:
+    image: mongo:latest
+    container_name: rosterdb
+
+  auth:
+    build: ./auth
+    container_name: auth
+    ports:
+      - 8201:8201
+    links:
+      - authdb
+
+  roster:
+    build: ./roster
+    container_name: roster
+    environment:
+      - DATABASE_IP=rosterdb
+      - AUTH_IP=auth
+    ports:
+      - 8202:8202
+    links:
+      - rosterdb
+
+  journey:
+    build: ./journey
+    container_name: journey
+    environment:
+      - PRICING_IP=pricing
+    ports:
+      - 8203:8203
+
+  pricing:
+    build: ./pricing
+    container_name: pricing
+    environment:
+      - ROSTER_IP=roster
+    ports:
+      - 8204:8204
