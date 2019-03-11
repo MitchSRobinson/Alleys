@@ -106,6 +106,6 @@ const server = spdy.createServer( {
     cert : fs.readFileSync( "cert/cert.pem" )
 }, app );
 
-server.listen( 8201, () => {
-    console.log( "Auth server listening on port 8201..." )
+server.listen( PORT, () => {
+    console.log( `Auth server listening on port ${PORT}...` )
 });
