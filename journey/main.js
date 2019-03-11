@@ -19,6 +19,7 @@ const mapsClient = maps.createClient({
 const PRICING_IP    = process.env.PRICING_IP || 'localhost';
 const PORT          = 8203;
 
+// Get the route from the Google Maps API.
 async function getRoute(origin, destination) {
     return await mapsClient.directions({origin, destination, mode: 'driving'})
     .asPromise()
@@ -27,15 +28,21 @@ async function getRoute(origin, destination) {
     })
     .catch(err => { throw(err) });
 }
+
+// Calculate whether a route has an A road majority.
 function isARoads(steps) {
     const routeLength = steps.length;
     steps = steps.filter(isARoad);
     return (steps.length / routeLength > 0.5) ? true : false;
 }
+
+// Calculate whether a leg of a route is on an A road.
 function isARoad(step) {
     if (step.html_instructions.match(/<b>A/)) return true;
     return false;
 }
+
+// Get the journey pricing details, including driver details and multiplier.
 async function getJourneyDetails(distance, aRoads) {
     return await fetch(`https://${PRICING_IP}:8204/`, {
         method: 'post',
