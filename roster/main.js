@@ -101,6 +101,7 @@ app.get( '/:username', async ( req, res ) => {
 
 // Get a list of all drivers currently on the roster.
 app.get( '/', async ( req, res ) => {
+    console.log('here');
     try {
         let drivers = [];
         
