@@ -14,7 +14,7 @@ const app = express();
 app.use( bodyParser.json() );
 
 // Variables
-const DATABASE_IP   = process.env.AUTH_IP;
+const DATABASE_IP   = process.env.DATABASE_IP || 'localhost';
 const SECRET        = 'secretKey';
 const DATABASE      = 'auth';
 const USER_COL      = 'users';
@@ -27,8 +27,8 @@ app.post( '/register', async (req, res) => {
         const u = req.body.username;
         const p = req.body.password;
 
-        if (!u && !p) {
-            res.status( 403 ).send( "Must provide a username and password." ); // 403 = Forbidden
+        if (!u || !p) {
+            res.status( 400 ).send( "Must provide a username and password." ); // 400 = Bad Request
         }
 
         const h = await bcrypt.hashSync(p, 10);

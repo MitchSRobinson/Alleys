@@ -9,15 +9,6 @@ services:
     image: mongo:latest
     container_name: rosterdb
 
-  nginx:
-    build:
-      context: nginx
-      dockerfile: Dockerfile
-    container_name: nginx
-    restart: always
-    ports:
-      - "8200:8200"
-
   auth:
     build: ./auth
     container_name: auth

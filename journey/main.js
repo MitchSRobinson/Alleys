@@ -30,10 +30,9 @@ async function getRoute(origin, destination) {
 }
 
 // Calculate whether a route has an A road majority.
-function isARoads(steps) {
-    const routeLength = steps.length;
-    steps = steps.filter(isARoad);
-    return (steps.length / routeLength > 0.5) ? true : false;
+function isARoads(steps, totalDist) {
+    aRoadDist = steps.filter(isARoad).reduce((a, b) => { return a + b.distance.value; }, 0)
+    return (aRoadDist / totalDist > 0.5) ? true : false;
 }
 
 // Calculate whether a leg of a route is on an A road.
@@ -66,23 +65,35 @@ async function getJourneyDetails(distance, aRoads) {
 // Book new journey.
 app.get( '/', async ( req, res ) => {
     try {
-        const origin = req.body['start'];
-        const destination = req.body['end'];
+        const origin = req.query['start'];
+        const destination = req.query['end'];
+
+        if (!origin || !destination) {
+            res.status( 400 ).send( "Must provide a start and finish point." ); // 400 = Bad Request
+        }
 
         let route = await getRoute(origin, destination), steps=[], distance=0.0;
 
         for (leg in route.legs) {
             steps = [].concat(steps, route.legs[leg].steps);
-            distance += (route.legs[leg].distance.value / 1000);
+            distance += (route.legs[leg].distance.value);
         }
 
-        let aRoads = isARoads(steps);
+        let aRoads = isARoads(steps, distance);
         try {
             let journey = await getJourneyDetails(distance, aRoads);
+
+            if (journey.error) {
+                console.log(`Returning error code 404 - ${journey.error}`);
+                res.status( 404 ).send( journey.error ).end();
+                return;
+            }
+
             journey = {
                 'price': journey.price,
                 'driver_name': journey.driver.name
             }
+
             res.status( 200 ).json( journey ).end();
             return;
         } catch ( e ) {
