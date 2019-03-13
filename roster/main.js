@@ -50,6 +50,11 @@ app.put( '/:username', async ( req, res ) => {
         const username  = req.params.username;
         const price      = req.body['price'];
 
+        if (isNaN(price) || price <= 0) {
+            res.status( 400 ).send( "Must provide a valid, non-negative price/km." );
+            return;
+        }
+
         authenticated = await isAuthenticated(req, username);
         if (!authenticated) {
             res.status( 401 ).end();
