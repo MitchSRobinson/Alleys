@@ -81,7 +81,7 @@ app.get( '/', async ( req, res ) => {
 
         let aRoads = isARoads(steps, distance);
         try {
-            let journey = await getJourneyDetails(distance, aRoads);
+            let journey = await getJourneyDetails(distance / 1000, aRoads);
 
             if (journey.error) {
                 console.log(`Returning error code 404 - ${journey.error}`);
