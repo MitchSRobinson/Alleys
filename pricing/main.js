@@ -16,6 +16,7 @@ const PORT          = 8204;
 const NO_DRIVERS    = { error: "No drivers currently available..." };
 const INCOMPLETE    = { error: "Distance is required. Must be positive." };
 
+// Fetch a list of the drivers currently on the roster and their listed prices.
 async function getDrivers() {
     return await fetch(`https://${ROSTER_IP}:8202/`, {
         key: fs.readFileSync('cert/key.pem'),
@@ -40,9 +41,9 @@ app.post( '/', async ( req, res ) => {
 
         const distance = req.body['distance'];
         const aRoads = req.body['is_a_road'] || false;
-        if (!distance || distance <= 0) {
+        if (!distance || isNaN(distance) || distance <= 0) {
             console.log(`Invalid distance: ${distance}`);
-            res.status( 412 ).json( INCOMPLETE ).end();
+            res.status( 400 ).json( INCOMPLETE ).end();
             return;
         }
 

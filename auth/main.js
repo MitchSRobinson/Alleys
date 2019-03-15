@@ -29,6 +29,7 @@ app.post( '/register', async (req, res) => {
 
         if (!u || !p) {
             res.status( 400 ).send( "Must provide a username and password." ); // 400 = Bad Request
+            return;
         }
 
         const h = await bcrypt.hashSync(p, 10);
